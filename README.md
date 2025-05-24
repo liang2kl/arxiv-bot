@@ -1,5 +1,9 @@
 # ArXiv Bot
 
+> [!INFO]
+> The entire codebase is created by AI (`claude-4-sonnet`). Use it at your own risk.
+
+
 A flexible bot system for Slack and Telegram that monitors ArXiv papers and provides AI-powered summaries.
 
 ## Features
