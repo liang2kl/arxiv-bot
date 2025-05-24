@@ -1,7 +1,7 @@
 # ArXiv Bot
 
 > [!IMPORTANT]
-> The entire codebase, including documentation and scripts, is created by AI (`claude-4-sonnet`). Use it at your own risk.
+> The entire codebase, including documentation and scripts, is created by AI (`claude-4-sonnet`). The logs of the development process are in [logs.md](logs.md). Use it at your own risk.
 
 A flexible bot system for Slack and Telegram that monitors ArXiv papers and provides AI-powered summaries.
 
