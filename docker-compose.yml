@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  # Slack Bot Service
+  arxiv-bot-slack:
+    build:
+      context: .
+      dockerfile: Dockerfile.slack
+    container_name: arxiv-bot-slack
+    restart: unless-stopped
+    environment:
+      # AI Provider Configuration
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - DEFAULT_AI_PROVIDER=${DEFAULT_AI_PROVIDER:-openai}
+      
+      # Slack Configuration
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
+      - SLACK_APP_TOKEN=${SLACK_APP_TOKEN}
+      
+      # Database Configuration (shared volume)
+      - DATABASE_URL=sqlite:////app/data/arxiv_bot.db
+      
+      # Monitoring Configuration
+      - MONITOR_INTERVAL_HOURS=${MONITOR_INTERVAL_HOURS:-6}
+      - MAX_PAPERS_PER_CHECK=${MAX_PAPERS_PER_CHECK:-5}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - arxiv-bot-network
+    depends_on:
+      arxiv-bot-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import arxiv_bot.core.config; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Telegram Bot Service
+  arxiv-bot-telegram:
+    build:
+      context: .
+      dockerfile: Dockerfile.telegram
+    container_name: arxiv-bot-telegram
+    restart: unless-stopped
+    environment:
+      # AI Provider Configuration
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - DEFAULT_AI_PROVIDER=${DEFAULT_AI_PROVIDER:-openai}
+      
+      # Telegram Configuration
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      
+      # Database Configuration (shared volume)
+      - DATABASE_URL=sqlite:////app/data/arxiv_bot.db
+      
+      # Monitoring Configuration
+      - MONITOR_INTERVAL_HOURS=${MONITOR_INTERVAL_HOURS:-6}
+      - MAX_PAPERS_PER_CHECK=${MAX_PAPERS_PER_CHECK:-5}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - arxiv-bot-network
+    depends_on:
+      arxiv-bot-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import arxiv_bot.core.config; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Database initialization service (runs once)
+  arxiv-bot-init:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: arxiv-bot-init
+    environment:
+      - DATABASE_URL=sqlite:////app/data/arxiv_bot.db
+    volumes:
+      - ./data:/app/data
+    command: ["python", "scripts/init-db.py"]
+    networks:
+      - arxiv-bot-network
+    restart: "no"
+
+networks:
+  arxiv-bot-network:
+    driver: bridge
+
+volumes:
+  arxiv-bot-data:
+    driver: local 

@@ -1,0 +1,27 @@
+# Core dependencies
+arxiv
+requests
+python-dotenv
+pydantic
+pydantic-settings
+schedule
+sqlalchemy
+alembic
+
+# AI providers
+openai
+google-generativeai
+anthropic
+
+# Slack bot
+slack-bolt
+slack-sdk
+
+# Telegram bot
+python-telegram-bot
+
+# Database (sqlite3 is built into Python)
+
+# Utilities
+python-dateutil
+feedparser
