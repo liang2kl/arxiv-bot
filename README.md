@@ -1,6 +1,6 @@
 # ArXiv Bot
 
-> [!INFO]
+> [!CAUTION]
 > The entire codebase is created by AI (`claude-4-sonnet`). Use it at your own risk.
 
 
